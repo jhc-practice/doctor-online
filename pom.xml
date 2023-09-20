@@ -16,6 +16,13 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>doctor-online</finalName>
+	  <finalName>doctor-online</finalName>
+	  <plugins>
+		  <plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-war-plugin</artifactid>
+			  <version>3.3.1</version>
+		  </plugin>
+	  </plugins>
   </build>
 </project>
