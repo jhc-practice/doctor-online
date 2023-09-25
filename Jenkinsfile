@@ -1,23 +1,40 @@
 pipeline{
     agent any
+    parameters {
+      choice choices: ['dev', 'test', 'prod'], description: 'Choose the environment to deploy', name: 'envName'
+    }
     stages{
-        stage("git checkout"){
+        stage("Maven Build"){
+            when {
+                expression { params.envName == "dev" }
+            }
             steps{
-                git branch: 'main', credentialsId: 'genkin-cred', url: 'https://github.com/jhc-practice/doctor-online'
+               sh "mvn clean package" 
             }
         }
-        stage("maven build"){
+        stage("Deploy To Dev"){
+            when {
+                expression { params.envName == "dev" }
+            }
             steps{
-                sh "mvn clean package"
+                echo params.envName
+                echo "Deploy to dev"
             }
         }
-        stage("dev deploy"){
+        stage("Deploy To Test"){
+            when {
+                expression { params.envName == "test" }
+            }
             steps{
-               sshagent(['genkin-pipeline']) {
-                sh "scp -o StrictHostKeyChecking=no target/doctor-online.war ec2-user@172.31.38.2:/opt/tomcat9/webapps"
-                sh "ssh ec2-user@172.31.38.2 /opt/tomcat9/bin/shutdown.sh"
-                sh "ssh ec2-user@172.31.38.2 /opt/tomcat9/bin/startup.sh"
-                }
+                echo "Deploy to test"
+            }
+        }
+        stage("Deploy To Prod"){
+            when {
+                expression { params.envName == "prod" }
+            }
+            steps{
+                echo "Deploy to prod"
             }
         }
     }
