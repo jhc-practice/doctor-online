@@ -3,6 +3,8 @@ pipeline{
     parameters {
       choice choices: ['dev', 'test', 'prod'], description: 'Choose the environment to deploy', name: 'envName'
     }
+    environment{
+        NEXUS_URL="172.31.23.163:8081"
     stages{
         stage("Maven Build"){
             when {
@@ -22,7 +24,20 @@ pipeline{
                         repoName="doctor-online-snapshot"
                     }
                 
-                nexusArtifactUploader artifacts: [[artifactId: 'doctor-online', classifier: '', file: 'target/doctor-online.war', type: 'war']], credentialsId: 'nexus3', groupId: 'in.javahome', nexusUrl: '18.217.156.63:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'doctor-online-snapshot', version: '1.1-SNAPSHOT'
+                nexusArtifactUploader artifacts: [[artifactId: 'doctor-online', classifier: '', file: 'target/doctor-online.war', type: 'war']], credentialsId: 'nexus3', groupId: 'in.javahome', nexusUrl: '18.217.156.63:8081', nexusVersion: 'nexus3', protocol: 'http', repository: repoName, version: version'
+                }
+            }
+        }
+        stage("download from nexus"){
+            steps{
+                script{
+                    withCredentials([usernameColonPassword(credentialsId: 'nexus3',variable: 'USERPASS')]){
+                        def pom =readMavenPom file:'pom.xml'
+                        def version=pom.version
+                        sh """
+                        curl -o doctor-online.war -u $USERPASS -X GET "{env.NEXUS_URL}/repository/doctor-online-release/in/javahome/doctor-online/${version}/doctor-online-${version}.war"
+                        """
+                    }
                 }
             }
         }
