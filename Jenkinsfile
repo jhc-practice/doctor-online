@@ -24,7 +24,7 @@ pipeline{
                         repoName="doctor-online-snapshot"
                     }
                 
-                nexusArtifactUploader artifacts: [[artifactId: 'doctor-online', classifier: '', file: 'target/doctor-online.war', type: 'war']], credentialsId: 'nexus3', groupId: 'in.javahome', nexusUrl: '18.217.156.63:8081', nexusVersion: 'nexus3', protocol: 'http', repository: repoName, version: version'
+                nexusArtifactUploader artifacts: [[artifactId: 'doctor-online', classifier: '', file: 'target/doctor-online.war', type: 'war']], credentialsId: 'nexus3', groupId: 'in.javahome', nexusUrl: env.NEXUS_URL, nexusVersion: 'nexus3', protocol: 'http', repository: repoName, version: version
                 }
             }
         }
