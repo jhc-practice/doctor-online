@@ -5,6 +5,7 @@ pipeline{
     }
     environment{
         NEXUS_URL="172.31.23.163:8081"
+    }
     stages{
         stage("Maven Build"){
             when {
